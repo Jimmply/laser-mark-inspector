@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laser-mark-inspector"
+version = "0.1.0"
+description = "DPM verification + root-cause diagnosis for laser-marked DataMatrix codes on black-anodized aluminum"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [{ name = "Dmitry Shurkhai", email = "etozhejimmy@gmail.com" }]
+keywords = ["laser-marking", "dpm", "datamatrix", "iso-29158", "computer-vision", "manufacturing", "anodized-aluminum"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

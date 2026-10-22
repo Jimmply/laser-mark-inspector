@@ -1,0 +1,27 @@
+# Laser marking of 2D DataMatrix on black-anodized aluminum (light mark on dark).
+process_nominal:
+  power_w: 20.0          # fiber/MOPA laser average power
+  speed_mm_s: 800.0      # hatch scan speed
+
+physics:                 # normalized dose D = (P/P_nom) * (v_nom/v)
+  bleach_threshold: 0.35 # dose below this leaves the dye intact
+  bleach_scale: 0.25     # dose scale over which bleaching saturates
+  burn_through: 1.7      # dose above this ablates to bare Al (grey, specular)
+  r_anodize: 0.06        # reflectance of black anodize
+  r_bleached: 0.70       # reflectance of fully bleached anodize
+  r_bare_al: 0.30        # bare aluminum under diffuse light
+  beam_sigma_px: 0.6     # in-focus beam blur
+  defocus_sigma_px_per_mm: 3.0
+
+render:
+  cell_px: 10
+  quiet_zone_modules: 2
+
+dataset:
+  n_samples: 1200
+  random_seed: 42
+
+model:
+  test_size: 0.2
+  random_seed: 42
+  n_estimators: 300
