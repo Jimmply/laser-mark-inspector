@@ -50,6 +50,8 @@ Seven of the nine pairs are named correctly every time. The two weak spots both 
 
 **Why it matters:** blur from defocus spreads the mark, which resembles the dot growth caused by too much power. An operator who followed that call would turn power **down** on a mark that is already too weak. Until the model is trained on combined faults, an "over_power" call on a low-contrast mark should be double-checked against a power-meter reading.
 
+The app does this automatically: an "over_power" call with no decode and a dim mark (mean light level < 130) shows a warning. On a fresh sample this rule caught 36 of 38 wrong-direction calls, and put a caution on 25 of 146 (17%) real over-power marks.
+
 ## What's graded
 
 Each graded parameter uses its published band thresholds. The overall grade is the worst parameter grade, as in the standard.

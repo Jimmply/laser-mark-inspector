@@ -18,6 +18,7 @@ from mark_generator import ProcessConfig, render_mark  # noqa: E402
 from root_cause import FEATURES, MISSING  # noqa: E402
 
 MODEL_PATH = Path(__file__).resolve().parents[1] / "models/root_cause.joblib"
+DIM_MARK = 130  # light_mean below this: over_power calls overlap under_power + defocus/dropout
 ACTIONS = {
     "ok": "No action. Process in spec.",
     "under_power": "Raise power or slow the scan; check laser output with a power meter.",
@@ -87,4 +88,9 @@ with right:
         top = probs.index[0]
         st.subheader(f"Likely cause: {top.replace('_', ' ')} ({probs.iloc[0]:.0%})")
         st.write(ACTIONS[top])
+        if top == "over_power" and not rep.decoded and rep.light_mean < DIM_MARK:
+            st.warning(
+                "No read and a dim mark: this pattern also fits under-power combined with defocus or "
+                "pulse dropout (see the README stress test). Confirm with a power meter before lowering power."
+            )
         st.bar_chart(probs)
