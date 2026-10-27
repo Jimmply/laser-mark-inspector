@@ -31,6 +31,25 @@ Aerospace and medical customers commonly require part marks to be verified, not 
 
 **Read the 0.988 with care.** In this simulator each fault has a distinct physical signature, so the number is an upper bound. See [Limitations](#limitations).
 
+## Stress test: two faults at once
+
+The classifier is trained on **one fault at a time**. A real line can drift on two knobs together, so [`scripts/eval_combined.py`](scripts/eval_combined.py) renders 360 marks with **two simultaneous faults** (9 pairs × 40) that the model never saw, and checks what it does:
+
+| Metric | Value |
+|---|---|
+| Two-fault marks that still graded **A** | 17.5% |
+| Flagged as faulty (not "ok") | **100%** |
+| Named one of the two real faults | **92.8%** |
+
+Seven of the nine pairs are named correctly every time. The two weak spots both involve under-power:
+
+| Pair | Named a real fault | Most common miss |
+|---|---|---|
+| under_power + defocus | 72% | **over_power** (11 / 40) |
+| under_power + pulse_dropout | 62% | over_power (7 / 40), defocus (8 / 40) |
+
+**Why it matters:** blur from defocus spreads the mark, which resembles the dot growth caused by too much power. An operator who followed that call would turn power **down** on a mark that is already too weak. Until the model is trained on combined faults, an "over_power" call on a low-contrast mark should be double-checked against a power-meter reading.
+
 ## What's graded
 
 Each graded parameter uses its published band thresholds. The overall grade is the worst parameter grade, as in the standard.
@@ -72,7 +91,7 @@ Fault severities start just outside the in-spec window, so mild faults look like
 ## Limitations
 
 - **Synthetic data.** Every fault has a clean physical signature here. Real marks will add combined faults, real optics, scratches and glare, so expect lower accuracy on a real line. The next step is collecting real verifier images from a production marker.
-- **One fault at a time.** Combined faults, such as defocus together with low power, aren't simulated yet.
+- **Trained on one fault at a time.** On two-fault marks it still flags every one, but it can name the wrong power direction (see the stress test above). Training on combined faults is the next step.
 - **Grid from re-encoding.** The grader re-encodes the decoded text to get the ideal module pattern, which assumes the marker used the minimal symbol size. If the decoder reports a different size, it logs a warning.
 - **Square DataMatrix only.**
 
@@ -86,6 +105,7 @@ pip install -r requirements.txt
 
 python scripts/generate_data.py     # 1,200 graded marks -> data/marks.csv (~3 s)
 python scripts/train.py             # root-cause model -> models/
+python scripts/eval_combined.py     # stress test on two-fault marks
 streamlit run src/app.py            # move the laser sliders, or upload your own mark photo
 pytest                              # 20 tests
 ```
@@ -98,6 +118,7 @@ laser-mark-inspector/
 ├── scripts/
 │   ├── generate_data.py          # simulate + grade marks -> data/marks.csv
 │   ├── train.py                  # root-cause classifier + baselines -> models/
+│   ├── eval_combined.py          # two-fault stress test
 │   └── make_gallery.py           # README hero image
 ├── src/
 │   ├── mark_generator.py         # DataMatrix rendering on anodized Al with laser physics

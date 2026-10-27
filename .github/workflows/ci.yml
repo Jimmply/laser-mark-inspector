@@ -29,6 +29,7 @@ jobs:
           python scripts/generate_data.py
           python scripts/train.py
           python scripts/make_gallery.py
+          python scripts/eval_combined.py
       - name: Smoke - Streamlit app renders
         run: |
           python -c "
