@@ -19,6 +19,7 @@ FEATURES = [
 ]
 GRADE_ONLY = ["decoded", "overall_rank"]
 MISSING = -1.0
+DIM_MARK = 130  # light_mean below this: over_power calls overlap under_power + defocus/dropout
 
 
 @dataclass
@@ -39,6 +40,10 @@ def prepare(df: pd.DataFrame) -> pd.DataFrame:
     out["overall_rank"] = out["overall"].map("ABCDF".index)
     out[FEATURES] = out[FEATURES].astype(float).fillna(MISSING)
     return out
+
+
+def power_direction_unsure(pred: str, decoded: bool, light_mean: float | None) -> bool:
+    return pred == "over_power" and not decoded and light_mean is not None and light_mean < DIM_MARK
 
 
 def train_root_cause(

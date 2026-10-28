@@ -109,7 +109,7 @@ python scripts/generate_data.py     # 1,200 graded marks -> data/marks.csv (~3 s
 python scripts/train.py             # root-cause model -> models/
 python scripts/eval_combined.py     # stress test on two-fault marks
 streamlit run src/app.py            # move the laser sliders, or upload your own mark photo
-pytest                              # 20 tests
+pytest                              # 21 tests
 ```
 
 ## Project structure
