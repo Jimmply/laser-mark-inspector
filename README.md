@@ -52,6 +52,20 @@ Seven of the nine pairs are named correctly every time. The two weak spots both 
 
 The app does this automatically: an "over_power" call with no decode and a dim mark (mean light level < 130) shows a warning. On a fresh sample this rule caught 36 of 38 wrong-direction calls, and put a caution on 25 of 146 (17%) real over-power marks.
 
+## Process window: grade vs. root cause
+
+[`scripts/process_window.py`](scripts/process_window.py) sweeps power (5–45 W) × scan speed (400–1200 mm/s), 357 settings with focus and galvo held nominal, and asks both the verifier and the model about each one. ○ = the grid cell nearest nominal (21 W, 800 mm/s).
+
+![Process window: verifier grade vs. model call](docs/img/process_window.png)
+
+| Share of the 357 settings | |
+|---|---|
+| Graded **A** | 68% |
+| Model says **ok** | 22% |
+| Graded A **but** model flags under/over power | **46%** |
+
+On black anodize the dye bleaches over a wide range of dose, so the verifier passes almost everything that still decodes. The model's "ok" region is the narrow diagonal where power/speed (dose) stays near nominal. Everything between the two maps is a process that has drifted while its parts still pass, which is where you want to catch it.
+
 ## What's graded
 
 Each graded parameter uses its published band thresholds. The overall grade is the worst parameter grade, as in the standard.
@@ -108,6 +122,7 @@ pip install -r requirements.txt
 python scripts/generate_data.py     # 1,200 graded marks -> data/marks.csv (~3 s)
 python scripts/train.py             # root-cause model -> models/
 python scripts/eval_combined.py     # stress test on two-fault marks
+python scripts/process_window.py    # power x speed map: grade vs. model
 streamlit run src/app.py            # move the laser sliders, or upload your own mark photo
 pytest                              # 21 tests
 ```
@@ -121,6 +136,7 @@ laser-mark-inspector/
 │   ├── generate_data.py          # simulate + grade marks -> data/marks.csv
 │   ├── train.py                  # root-cause classifier + baselines -> models/
 │   ├── eval_combined.py          # two-fault stress test
+│   ├── process_window.py         # power x speed sweep -> docs/img/process_window.png
 │   └── make_gallery.py           # README hero image
 ├── src/
 │   ├── mark_generator.py         # DataMatrix rendering on anodized Al with laser physics
